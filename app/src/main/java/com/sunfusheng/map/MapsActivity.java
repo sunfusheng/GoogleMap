@@ -1,6 +1,10 @@
 package com.sunfusheng.map;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,16 +30,24 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.sunfusheng.StickyHeaderDecoration;
 import com.sunfusheng.map.adapter.StickyGroupAdapter;
 import com.sunfusheng.map.utils.StatusBarUtil;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleMap.OnMarkerClickListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "sunfusheng";
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] permissions = new String[]{
-            android.Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
     private GoogleMap googleMap;
@@ -50,11 +62,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         StatusBarUtil.setTranslucentForImageView(this, 60, null);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, permissions, 1);
-            return;
-        }
         initData();
         initView();
     }
@@ -102,24 +109,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        initGoogleMap();
-        initGoogleApiClient();
+        initGoogleMap(googleMap);
+
+        if (ActivityCompat.checkSelfPermission(this, permissions[0]) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, permissions[1]) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            initMyLocation();
+        }
     }
 
-    private void initGoogleMap() {
+    private void initGoogleMap(GoogleMap googleMap) {
+        this.googleMap = googleMap;
         UiSettings uiSettings = googleMap.getUiSettings();
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        googleMap.setMyLocationEnabled(true);
 
         LatLng sydney = new LatLng(-34, 151);
         googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -127,11 +129,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setOnMarkerClickListener(this);
     }
 
-    private synchronized void initGoogleApiClient() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            initMyLocation();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private synchronized void initMyLocation() {
+        googleMap.setMyLocationEnabled(true);
+
         googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
                 .build();
 
         googleApiClient.connect();
@@ -142,12 +155,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return false;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (bundle == null) {
-            return;
-        }
-        Log.d(TAG, "onConnected() bundle: " + bundle.toString());
+        Log.d(TAG, "onConnected() bundle: " + bundle);
+
+        Location location1 = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        Log.d(TAG, "onComplete() location: " + location1);
+
+        Task<Location> lastLocation = LocationServices.getFusedLocationProviderClient(this).getLastLocation();
+        lastLocation.addOnCompleteListener(task -> {
+            Log.d(TAG, "onComplete() task: " + task);
+        });
+        lastLocation.addOnSuccessListener(location -> {
+            Log.d(TAG, "onSuccess() location: " + location);
+        });
+        lastLocation.addOnFailureListener(Throwable::printStackTrace);
+
     }
 
     @Override
