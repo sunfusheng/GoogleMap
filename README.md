@@ -1,2 +1,2 @@
-# GoogleMap
-Android Google Map Demo
+# GoogleMaps
+Android GoogleMaps Demo
