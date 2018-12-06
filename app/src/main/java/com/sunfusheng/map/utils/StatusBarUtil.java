@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
  */
 public class StatusBarUtil {
 
-
     public static final int DEFAULT_STATUS_BAR_ALPHA = 112;
     private static final int FAKE_STATUS_BAR_VIEW_ID = R.id.statusbarutil_fake_status_bar_view;
     private static final int FAKE_TRANSLUCENT_VIEW_ID = R.id.statusbarutil_translucent_view;

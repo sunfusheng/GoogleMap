@@ -46,7 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        StatusBarUtil.setTranslucentForImageView(this, 60, null);
+        StatusBarUtil.setTranslucentForImageView(this, 0, null);
 
         initData();
         initView();
