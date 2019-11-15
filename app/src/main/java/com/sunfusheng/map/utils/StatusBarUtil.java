@@ -729,18 +729,13 @@ public class StatusBarUtil {
     }
 
     public static void fullScreen(Window window) {
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
-                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (OsVersionUtil.hasJellyBean()) {
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-        }
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
     public static void unfullScreen(Window window) {
         window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (OsVersionUtil.hasJellyBean()) {
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 }

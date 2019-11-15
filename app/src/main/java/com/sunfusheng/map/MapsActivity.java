@@ -2,19 +2,29 @@ package com.sunfusheng.map;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -24,8 +34,11 @@ import com.sunfusheng.StickyHeaderDecoration;
 import com.sunfusheng.map.adapter.StickyGroupAdapter;
 import com.sunfusheng.map.utils.StatusBarUtil;
 
+import java.util.List;
+import java.util.Locale;
+
 public class MapsActivity extends FragmentActivity implements
-        OnMapReadyCallback {
+        OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] permissions = new String[]{
@@ -35,7 +48,8 @@ public class MapsActivity extends FragmentActivity implements
 
     private GoogleMap mGoogleMap;
     protected GoogleApiClient mGoogleApiClient;
-    protected Location mCurrentLocation;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private LocationRequest mLocationRequest;
 
     private BottomSheetDialog bottomSheetDialog;
     private BottomSheetBehavior bottomSheetBehavior;
@@ -93,32 +107,97 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        initGoogleMap(googleMap);
+        this.mGoogleMap = googleMap;
 
         if (ActivityCompat.checkSelfPermission(this, permissions[0]) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, permissions[1]) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
         } else {
-            initMyLocation();
+            initGoogleMap();
         }
-    }
-
-    private void initGoogleMap(GoogleMap googleMap) {
-        this.mGoogleMap = googleMap;
-
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            initMyLocation();
+            initGoogleMap();
         }
     }
 
-    private void initMyLocation() {
-        mGoogleMap.setMyLocationEnabled(true);
+    private void initGoogleMap() {
+        this.mGoogleMap.setMyLocationEnabled(true);
+
+        this.mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        this.mGoogleApiClient.connect();
+
+        this.mLocationRequest = LocationRequest.create();
+        this.mLocationRequest.setInterval(5000);
+        this.mLocationRequest.setFastestInterval(3000);
+        this.mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        this.mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        this.mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, getMainLooper());
+    }
+
+    private LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            if (locationResult == null) {
+                return;
+            }
+
+            for (Location location : locationResult.getLocations()) {
+                if (location != null) {
+                    getAddress(location.getLatitude(), location.getLongitude());
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
 
     }
 
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    public String getAddress(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> address = geocoder.getFromLocation(latitude, longitude, 1);
+            Log.d("sfs", "得到位置当前" + address + "'\n"
+                    + "经度：" + String.valueOf(address.get(0).getLongitude()) + "\n"
+                    + "纬度：" + String.valueOf(address.get(0).getLatitude()) + "\n"
+                    + "国家：" + address.get(0).getCountryName() + "\n"
+                    + "CountryCode: " + address.get(0).getCountryCode() + "\n"
+                    + "城市：" + address.get(0).getLocality() + "\n"
+                    + "街道：" + address.get(0).getAddressLine(0)
+            );
+            return address.get(0).getAddressLine(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
+        super.onDestroy();
+    }
 }
