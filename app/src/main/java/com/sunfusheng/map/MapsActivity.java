@@ -1,8 +1,8 @@
 package com.sunfusheng.map;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,31 +14,28 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.sunfusheng.StickyHeaderDecoration;
 import com.sunfusheng.map.adapter.StickyGroupAdapter;
 import com.sunfusheng.map.utils.StatusBarUtil;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleMap.OnMarkerClickListener {
+public class MapsActivity extends FragmentActivity implements
+        OnMapReadyCallback {
 
-    private static final String TAG = "sunfusheng";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] permissions = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
-    private GoogleMap googleMap;
+    private GoogleMap mGoogleMap;
+    protected GoogleApiClient mGoogleApiClient;
+    protected Location mCurrentLocation;
 
     private BottomSheetDialog bottomSheetDialog;
     private BottomSheetBehavior bottomSheetBehavior;
@@ -107,13 +104,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void initGoogleMap(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        UiSettings uiSettings = googleMap.getUiSettings();
+        this.mGoogleMap = googleMap;
 
-        LatLng sydney = new LatLng(-34, 151);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        googleMap.setOnMarkerClickListener(this);
     }
 
     @Override
@@ -124,15 +116,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private synchronized void initMyLocation() {
-        googleMap.setMyLocationEnabled(true);
+    private void initMyLocation() {
+        mGoogleMap.setMyLocationEnabled(true);
 
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        return false;
     }
 
 }
