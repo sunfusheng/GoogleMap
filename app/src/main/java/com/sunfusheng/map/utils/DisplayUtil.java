@@ -52,5 +52,4 @@ public class DisplayUtil {
     public static int getWindowHeight(Context context) {
         return getDisplayMetrics(context).heightPixels;
     }
-
 }
