@@ -97,6 +97,14 @@ public class LocationHelper {
         return getLocationManager().getLastKnownLocation(getLocationProvider());
     }
 
+    public Address getLastKnownAddress() {
+        Location location = getLastKnownLocation();
+        if (location != null) {
+            return getAddress(location.getLatitude(), location.getLongitude());
+        }
+        return null;
+    }
+
     public Address getAddress(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
         try {

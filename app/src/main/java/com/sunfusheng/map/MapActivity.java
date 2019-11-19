@@ -37,7 +37,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     private BottomSheetDialog bottomSheetDialog;
     private BottomSheetBehavior bottomSheetBehavior;
-    private View vMyLocationButton;
 
     private GoogleMap mMap;
 
@@ -106,8 +105,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     private void initMyLocationButton(View view) {
-        vMyLocationButton = view.findViewById(Integer.parseInt("2"));
-        if (vMyLocationButton != null && vMyLocationButton.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+        View vMyLocationButton = view.findViewById(Integer.parseInt("2"));
+        if (vMyLocationButton == null) {
+            return;
+        }
+
+        if (vMyLocationButton.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) vMyLocationButton.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
