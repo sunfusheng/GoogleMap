@@ -28,7 +28,7 @@ import com.sunfusheng.map.location.LocationHelper;
 import com.sunfusheng.map.utils.DisplayUtil;
 import com.sunfusheng.map.utils.StatusBarUtil;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final Permissions permissions = Permissions.build(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -92,7 +92,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             public void onAllPermissionOk(Permission[] allPermissions) {
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.support_map_fragment);
                 if (mapFragment != null) {
-                    mapFragment.getMapAsync(MapActivity.this);
+                    mapFragment.getMapAsync(MainActivity.this);
                     initMyLocationButton(mapFragment.getView());
                 }
             }
