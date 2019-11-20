@@ -1,4 +1,4 @@
-package com.sunfusheng.map;
+package com.sunfusheng.googlemap;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -23,10 +23,10 @@ import com.qw.soul.permission.bean.Permission;
 import com.qw.soul.permission.bean.Permissions;
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener;
 import com.sunfusheng.StickyHeaderDecoration;
-import com.sunfusheng.map.adapter.StickyGroupAdapter;
-import com.sunfusheng.map.location.LocationHelper;
-import com.sunfusheng.map.utils.DisplayUtil;
-import com.sunfusheng.map.utils.StatusBarUtil;
+import com.sunfusheng.googlemap.adapter.StickyGroupAdapter;
+import com.sunfusheng.googlemap.location.LocationHelper;
+import com.sunfusheng.googlemap.utils.DisplayUtil;
+import com.sunfusheng.googlemap.utils.StatusBarUtil;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -41,6 +41,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
 
     private LocationHelper mLocationHelper;
+
+    public static String[][] items = {
+            {"街景", "1"}
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +72,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         RecyclerView recyclerView = bottomSheetView.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new StickyHeaderDecoration());
-        StickyGroupAdapter stickyAdapter = new StickyGroupAdapter(this, Constants.items);
+        StickyGroupAdapter stickyAdapter = new StickyGroupAdapter(this, items);
         recyclerView.setAdapter(stickyAdapter);
 
         bottomSheetDialog = new BottomSheetDialog(this);

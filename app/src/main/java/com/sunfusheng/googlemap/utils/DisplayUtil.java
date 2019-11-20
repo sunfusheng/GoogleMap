@@ -1,4 +1,4 @@
-package com.sunfusheng.map.utils;
+package com.sunfusheng.googlemap.utils;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

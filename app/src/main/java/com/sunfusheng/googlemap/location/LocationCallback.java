@@ -1,4 +1,4 @@
-package com.sunfusheng.map.location;
+package com.sunfusheng.googlemap.location;
 
 import android.location.Address;
 

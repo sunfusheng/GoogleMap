@@ -1,10 +1,10 @@
-package com.sunfusheng.map.adapter;
+package com.sunfusheng.googlemap.adapter;
 
 import android.content.Context;
 
 import com.sunfusheng.GroupRecyclerViewAdapter;
 import com.sunfusheng.GroupViewHolder;
-import com.sunfusheng.map.R;
+import com.sunfusheng.googlemap.R;
 
 /**
  * @author sunfusheng on 2018/9/23.

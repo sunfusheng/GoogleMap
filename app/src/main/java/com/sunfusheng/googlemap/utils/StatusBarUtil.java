@@ -1,4 +1,4 @@
-package com.sunfusheng.map.utils;
+package com.sunfusheng.googlemap.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.sunfusheng.map.R;
+import com.sunfusheng.googlemap.R;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
