@@ -14,8 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
+import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.SupportStreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.StreetViewPanoramaLocation;
+import com.google.android.gms.maps.model.StreetViewPanoramaOrientation;
+import com.google.android.gms.maps.model.StreetViewSource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qw.soul.permission.SoulPermission;
@@ -46,6 +52,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             {"街景", "1"}
     };
 
+    private SupportStreetViewPanoramaFragment mStreetViewPanoramaFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +62,49 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         initView();
         initData();
+
+        mStreetViewPanoramaFragment = (SupportStreetViewPanoramaFragment) getSupportFragmentManager().findFragmentById(R.id.street_view_panorama);
+        mStreetViewPanoramaFragment.onCreate(savedInstanceState);
+        mStreetViewPanoramaFragment.getStreetViewPanoramaAsync(panorama -> {
+            LatLng latLng = new LatLng(-33.87365, 151.20689);
+            panorama.setPosition(latLng);
+            panorama.setOnStreetViewPanoramaChangeListener(new StreetViewPanorama.OnStreetViewPanoramaChangeListener() {
+                @Override
+                public void onStreetViewPanoramaChange(StreetViewPanoramaLocation streetViewPanoramaLocation) {
+
+                }
+            });
+            panorama.setOnStreetViewPanoramaClickListener(new StreetViewPanorama.OnStreetViewPanoramaClickListener() {
+                @Override
+                public void onStreetViewPanoramaClick(StreetViewPanoramaOrientation streetViewPanoramaOrientation) {
+
+                }
+            });
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        mStreetViewPanoramaFragment.onStart();
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        mStreetViewPanoramaFragment.onResume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        mStreetViewPanoramaFragment.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        mStreetViewPanoramaFragment.onStop();
+        super.onStop();
     }
 
     private void initView() {
@@ -143,6 +194,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if (mLocationHelper != null) {
             mLocationHelper.stop();
         }
+        mStreetViewPanoramaFragment.onDestroy();
         super.onDestroy();
     }
 }
