@@ -16,6 +16,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
+import com.google.android.gms.maps.StreetViewPanoramaOptions;
+import com.google.android.gms.maps.StreetViewPanoramaView;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.SupportStreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -38,7 +40,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final Permissions permissions = Permissions.build(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     );
 
     private BottomSheetDialog bottomSheetDialog;
@@ -51,6 +55,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public static String[][] items = {
             {"街景", "1"}
     };
+
+    private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
 
     private SupportStreetViewPanoramaFragment mStreetViewPanoramaFragment;
 
@@ -81,12 +87,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
         });
-    }
-
-    @Override
-    protected void onStart() {
-        mStreetViewPanoramaFragment.onStart();
-        super.onStart();
     }
 
     @Override
